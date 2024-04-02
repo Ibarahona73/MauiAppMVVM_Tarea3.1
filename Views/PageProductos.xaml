@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:convert="clr-namespace:MauiAppMVVM.Convertir"
+             xmlns:cx="clr-namespace:MauiAppMVVM.ModelView"
+             x:Class="MauiAppMVVM.Views.PageProductos"
+             Title="Creacion De Productos">
+
+    <ContentPage.Resources>
+        <convert:base64Image x:Key="BaseArray" />
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <cx:ProductosViewModels />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <Grid Margin="20" BackgroundColor="#007BFF" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="1" Grid.Column="0" Text="Descrip. Articulo" FontSize="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand"/>
+            <Entry Grid.Row="1" Grid.Column="1" Text="{ Binding Nombre }" FontSize="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand"/>
+
+            <Label Grid.Row="2" Grid.Column="0" Text="Precio. Articulo" FontSize="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand"/>
+            <Entry Grid.Row="2" Grid.Column="1" Text="{ Binding Precio }" FontSize="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand"/>
+            
+            <Image x:Name="imgSitio" Grid.Row="3" Grid.Column="1" Margin="0,0,0,10" Aspect="AspectFit" HeightRequest="200" HorizontalOptions="FillAndExpand" 
+                   Source="{Binding Foto, Converter={StaticResource BaseArray}}" VerticalOptions="CenterAndExpand" WidthRequest="200" />
+
+            <Button x:Name="btnTomarFoto" Grid.Row="3" Grid.Column="1"  Command="{Binding FotoCommand}" CommandParameter="{Binding .}" CornerRadius="20" FontSize="12" HeightRequest="40" 
+                    HorizontalOptions="FillAndExpand" Text="Tomar Foto" />
+
+            <Button Grid.Row="4" Grid.Column="0" 
+                    Text="Crear Producto" Command="{Binding CreateCommand}" BackgroundColor="#007BFF" TextColor="White" FontSize="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand"/>
+
+            <Button Grid.Row="4" Grid.Column="1" Margin="5,5,5,5" BackgroundColor="#007BFF" Command="{Binding UpdateCommand}" FontSize="20" HorizontalOptions="FillAndExpand" IsVisible="{Binding VisibilityUpdate}"
+                Text="Actualizar Producto" TextColor="White" VerticalOptions="CenterAndExpand" />
+
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>
