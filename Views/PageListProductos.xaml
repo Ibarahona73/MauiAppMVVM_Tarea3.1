@@ -15,23 +15,26 @@
             
             <Button Margin="5,5,5,5" Command="{Binding NuevoProductoCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Crear Producto" />
 
-            <Button Margin="5,5,5,5" Command="{Binding GoToDetailsCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Actualizar Productos" />
+            <Button Margin="5,5,5,5" Command="{Binding GoToDetailsCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Actualizar Productos" BackgroundColor="#5298df"/>
 
-            <Button Margin="5,5,5,20" Command="{Binding DeleteCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Borrar Producto" />
+            <Button Margin="5,5,5,20" Command="{Binding DeleteCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Borrar Producto" BackgroundColor="#0bb98b"/>
+
+            <Button Margin="0,0,0,20" CornerRadius="20" Text="Salir Del App" BackgroundColor="#ff4f5f" Clicked="Button_Clicked"/>
+
 
             <ListView ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Orientation="Horizontal">
+                            <StackLayout Orientation="Horizontal" >
                                 
-                                <Image HeightRequest="50" Source="{Binding Foto, Converter={StaticResource BaseArray}}" WidthRequest="50" /> 
+                                <Image HeightRequest="75" Source="{Binding Foto, Converter={StaticResource BaseArray}}" WidthRequest="75" /> 
                                 
                                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand">
                                 
                                     <Label
                                         FontSize="14"
-                                        Text="{Binding Nombre}"
+                                        Text="{Binding Nombre ,StringFormat='Articulo: {0}' }"
                                         VerticalOptions="Center" />
                                     <Label
                                         FontSize="12"

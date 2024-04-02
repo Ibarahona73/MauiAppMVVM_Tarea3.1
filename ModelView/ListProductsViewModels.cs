@@ -30,13 +30,14 @@ namespace MauiAppMVVM.ModelView
             set { _selectedProduct = value; OnPropertyChanged(); }
         }
 
-        public ICommand GoToDetailsCommand { private set; get; }
+        public ICommand GoToDetailsCommand { private set; get; }        
 
         public ICommand DeleteCommand { private set; get; }
 
         public ICommand NuevoProductoCommand{ private set; get; }
 
         public INavigation Navigation { get; set; }
+        public ICommand SalirCommand { private set; get; }
 
         public ListProductsViewModels(INavigation navigation)
         {
@@ -44,7 +45,11 @@ namespace MauiAppMVVM.ModelView
             GoToDetailsCommand = new Command<Type>(async (pageType) => await GoToDetails(pageType, SelectedProduct));
             NuevoProductoCommand = new Command<Type>(async (pageType) => await NuevoProducto(pageType));
             DeleteCommand = new Command(async () => await DeleteProduct(SelectedProduct.Id));
-            //DeleteCommand = new Command(async () => await DeleteProduct());
+
+            SalirCommand = new Command(() =>
+            {MessagingCenter.Send<object>(this, "CerrarApp");});
+
+            
 
             CargarProductos();            
         }
