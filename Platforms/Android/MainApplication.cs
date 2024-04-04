@@ -1,8 +1,12 @@
 ﻿using Android.App;
 using Android.Runtime;
+using System.Reflection;
+
+[assembly: UsesPermission(Android.Manifest.Permission.ReadContacts)]
 
 namespace MauiAppMVVM
 {
+    
     [Application]
     public class MainApplication : MauiApplication
     {
