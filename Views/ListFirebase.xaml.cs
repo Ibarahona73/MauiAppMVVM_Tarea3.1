@@ -6,31 +6,32 @@ using System.Collections.ObjectModel;
 
 public partial class ListFirebase : ContentPage
 {
-	FirebaseClient client = new FirebaseClient("https://mvvm-741a5-default-rtdb.firebaseio.com/");
-	public ObservableCollection<Productos> Lista { get; set; } = new ObservableCollection<Productos>();
+    FirebaseClient client = new FirebaseClient("https://mvvm-741a5-default-rtdb.firebaseio.com/");
+    public ObservableCollection<Productos> Lista { get; set; } = new ObservableCollection<Productos>();
+    private Productos selectedProduct;
 
-	public ListFirebase()
-	{
-		InitializeComponent();
-		BindingContext = this;
-		CargarList();
+    public ListFirebase()
+    {
+        InitializeComponent();
+        BindingContext = this;
+        CargarList();
 
     }
 
-	public void CargarList()
-	{
-		client.Child("Productos")
-			.AsObservable<Productos>()
-			.Subscribe((producto) =>
-			{
+    public void CargarList()
+    {
+        client.Child("Productos")
+            .AsObservable<Productos>()
+            .Subscribe((producto) =>
+            {
 
-				if(producto.Object != null)
-				{
-					Lista.Add(producto.Object);
-				}
+                if (producto.Object != null)
+                {
+                    Lista.Add(producto.Object);
+                }
 
-			});
-	}
+            });
+    }
 
     private async void NewButton_Clicked(object sender, EventArgs e)
     {
@@ -40,19 +41,19 @@ public partial class ListFirebase : ContentPage
 
     private void filtroEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
-		string filtro = filtroEntry.Text.ToLower();
+        string filtro = filtroEntry.Text.ToLower();
 
-		if(filtro.Length >0 )
-		{
-			listaProducts.ItemsSource = Lista.Where(x => x.Nombre.ToLower().Contains(filtro));
-
-		}
-		else
-		{
-			listaProducts.ItemsSource = Lista;
+        if (filtro.Length > 0)
+        {
+            listaProducts.ItemsSource = Lista.Where(x => x.Nombre.ToLower().Contains(filtro));
 
         }
-		
+        else
+        {
+            listaProducts.ItemsSource = Lista;
+
+        }
+
 
     }
 
@@ -68,7 +69,8 @@ public partial class ListFirebase : ContentPage
 
        var navigation = Application.Current.MainPage.Navigation;
        await navigation.PushAsync(new VerProductPage(parametro)); */
-
+        selectedProduct = e.CurrentSelection.FirstOrDefault() as Productos;
+        listaProducts.SelectedItem = selectedProduct;
 
         try
         {
@@ -86,4 +88,29 @@ public partial class ListFirebase : ContentPage
         }
     }
 
+    private async void Borrar_Clicked(object sender, EventArgs e)
+    {
+        if (selectedProduct != null)
+        {
+            try
+            {
+                // Eliminar el producto seleccionado de Firebase
+                await client.Child("Productos").Child(selectedProduct.Id.ToString()).DeleteAsync();
+
+                // Eliminar el producto seleccionado de la lista local
+                Lista.Remove(selectedProduct);
+
+                // Limpiar la selección en la lista
+                listaProducts.SelectedItem = null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al borrar el producto: " + ex.Message);
+            }
+        }
+        else
+        {
+            Console.WriteLine("No se ha seleccionado ningún producto para borrar.");
+        }
+    }
 }

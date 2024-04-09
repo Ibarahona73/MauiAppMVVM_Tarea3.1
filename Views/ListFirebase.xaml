@@ -33,12 +33,18 @@
                     Grid.Column="1"
                     Clicked="NewButton_Clicked"/>
 
+            <Button Text="Borrar"
+                    x:Name="Borrar"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Clicked="Borrar_Clicked"/>   
+
             <CollectionView x:Name="listaProducts"
                             ItemsSource="{Binding Lista}"
                             SelectionMode="Single"
-                            SelectionChanged="listaProducts_SelectionChanged"
+                            SelectionChanged="listaProducts_SelectionChanged"                            
                             Grid.Row="1"
-                            Grid.ColumnSpan="2">
+                            Grid.Column="0">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
