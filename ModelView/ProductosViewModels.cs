@@ -1,15 +1,19 @@
 ﻿using MauiAppMVVM.Controllers;
+using MauiAppMVVM.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Firebase.Database;
+using Firebase.Database.Query;
 using System.Windows.Input;
 
 namespace MauiAppMVVM.ModelView
 {
     public class ProductosViewModels : BaseView
     {
+       
         private ProductosController productosController = new ProductosController();
         private int productId;        
         private string _nombre;                
@@ -19,6 +23,9 @@ namespace MauiAppMVVM.ModelView
         private bool _visibilityCreate;
         private bool _visibilityUpdate;
         private Models.Productos _selectedProduct;
+
+        FirebaseClient client = new FirebaseClient("https://mvvm-741a5-default-rtdb.firebaseio.com/");
+        public List<Productos> Productas { get; set; }
 
         public int Id
         {
@@ -112,29 +119,6 @@ namespace MauiAppMVVM.ModelView
                                                                                                               //CRUD 
 
 
-        /*async Task CreateData()
-        {
-            try{
-
-                var Productos = new Models.Productos{
-
-                    Nombre = Nombre,
-                    Precio = Precio,
-                    Foto = Foto,
-                };
-
-                // Ejemplo de lo que quiere 
-                // await DBNull.insert(product);
-
-                // crear un objeto que maneje la bd 
-            }
-
-            catch(Exception ex){
-
-
-            }
-        } */
-
         async Task CreateData()
         {
             if(Nombre == null)
@@ -162,6 +146,16 @@ namespace MauiAppMVVM.ModelView
                 if(productosController != null)
                 {
                     bool añadido = await productosController.storeProductos(Product);
+                    
+                    await client.Child("Productos").PostAsync(new Productos
+                    {
+                        Id = Product.Id,
+                        Nombre = Product.Nombre,
+                        Precio = Product.Precio,
+                        Foto = Product.Foto,
+
+
+                    });
 
                     if (añadido)
                     {
@@ -223,6 +217,7 @@ namespace MauiAppMVVM.ModelView
             }
         }
 
+
         async void TomarFoto()
         {
             FileResult photo = await MediaPicker.CapturePhotoAsync();
@@ -238,6 +233,12 @@ namespace MauiAppMVVM.ModelView
                     Foto = Convertir.PhotoHelper.GetImg64(photo);
                 }
             }
+        }
+
+        public void CargarProd()
+        {
+            var prod = client.Child("Productos").OnceAsync<Productos>();
+            Productas = prod.Result.Select(X => X.Object).ToList();
         }
     }
 }

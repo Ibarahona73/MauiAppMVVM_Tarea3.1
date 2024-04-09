@@ -17,4 +17,10 @@ public partial class PageListProductos : ContentPage
     {
         App.Current.Quit();
     }
+
+    private async void Button_Clicked_1(object sender, EventArgs e)
+    {
+        var navigation = Application.Current.MainPage.Navigation;
+        await navigation.PushAsync(new Views.ListFirebase());
+    }
 }

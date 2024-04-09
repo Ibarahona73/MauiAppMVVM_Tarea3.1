@@ -21,6 +21,8 @@
 
             <Button Margin="0,0,0,20" CornerRadius="20" Text="Salir Del App" BackgroundColor="#ff4f5f" Clicked="Button_Clicked"/>
 
+            <Button Margin="0,0,0,20" CornerRadius="20" Text="Lista FireBase" BackgroundColor="#ff45ff" Clicked="Button_Clicked_1"/>
+
 
             <ListView ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}">
                 <ListView.ItemTemplate>
