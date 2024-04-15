@@ -22,17 +22,10 @@ namespace MauiAppMVVM
 
 #if DEBUG
     		builder.Logging.AddDebug();
-#endif
-            NewProducto();
+#endif            
             return builder.Build();
         }
 
-        public static void NewProducto()
-        {
-            FirebaseClient client = new FirebaseClient("https://mvvm-741a5-default-rtdb.firebaseio.com/");
-            ProductosViewModels h = new ProductosViewModels();
-            var productos = client.Child("Productos").OnceAsync<Productos>();
-            
-        }
+   
     }
 }

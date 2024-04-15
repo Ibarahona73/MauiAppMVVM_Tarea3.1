@@ -20,8 +20,7 @@
             <Button Margin="5,5,5,20" Command="{Binding DeleteCommand}" CommandParameter="{x:Type local:PageProductos}" CornerRadius="20" Text="Borrar Producto" BackgroundColor="#0bb98b"/>
 
             <Button Margin="0,0,0,20" CornerRadius="20" Text="Salir Del App" BackgroundColor="#ff4f5f" Clicked="Button_Clicked"/>
-
-            <Button Margin="0,0,0,20" CornerRadius="20" Text="Lista FireBase" BackgroundColor="#ff45ff" Clicked="Button_Clicked_1"/>
+            
 
 
             <ListView ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}">

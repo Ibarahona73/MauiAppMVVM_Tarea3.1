@@ -12,19 +12,19 @@ namespace MauiAppMVVM.ModelView
 {
     public class ListProductsViewModels : BaseView
     {
+        private ObservableCollection<Models.FireProd> _products;
+        private FirebaseControl firebaseControl = new FirebaseControl();
+               
 
-        private ObservableCollection<Models.Productos> _products;
-        private ProductosController productosController = new ProductosController();
-
-        public ObservableCollection<Models.Productos> Products
+        public ObservableCollection<Models.FireProd> Products
         {
             get { return _products; }
             set { _products = value; OnPropertyChanged(); }
         }
 
-        private Models.Productos _selectedProduct;
+        private Models.FireProd _selectedProduct;
 
-        public Models.Productos SelectedProduct
+        public Models.FireProd SelectedProduct
         {
             get { return _selectedProduct; }
             set { _selectedProduct = value; OnPropertyChanged(); }
@@ -44,65 +44,53 @@ namespace MauiAppMVVM.ModelView
             Navigation = navigation;
             GoToDetailsCommand = new Command<Type>(async (pageType) => await GoToDetails(pageType, SelectedProduct));
             NuevoProductoCommand = new Command<Type>(async (pageType) => await NuevoProducto(pageType));
-            DeleteCommand = new Command(async () => await DeleteProduct(SelectedProduct.Id));
+            DeleteCommand = new Command(async () => await DeleteProducto(SelectedProduct.Key));
 
-            SalirCommand = new Command(() =>
-            {MessagingCenter.Send<object>(this, "CerrarApp");});
-
-            
-
-            CargarProductos();            
+            loadProductos();
         }
 
-        async Task CargarProductos()
+        async Task loadProductos()
         {
-            List<Productos> listProductos;
+            List<FireProd> listProductos;
 
-            Products = new ObservableCollection<Productos>();
+            Products = new ObservableCollection<FireProd>();
 
             try
             {
-                listProductos = await productosController.GetListProductos();
+                listProductos = await firebaseControl.GetListProductos();
                 foreach (var product in listProductos)
                 {
-                    Productos productos = new Productos
+                    FireProd productos = new FireProd
                     {
-                        Id = product.Id,
+                        Key = product.Key,
                         Nombre = product.Nombre,
                         Precio = product.Precio,
                         Foto = product.Foto,
-
                     };
 
                     Products.Add(productos);
-
                 }
 
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Se Produjo Un Error Al Obtener los Productos", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "Se produjo un error al obtener los productos", "OK");
             }
-
         }
 
-        async Task GoToDetails(Type pageType, Models.Productos selectedProduct)
+        async Task GoToDetails(Type pageType, FireProd selectedProduct)
         {
-            if (SelectedProduct != null)
+            if (selectedProduct != null)
             {
                 var page = (Page)Activator.CreateInstance(pageType);
 
-
-                var VModel = new ProductosViewModels();
-
-                VModel.SelectedProduct = SelectedProduct;                
-                VModel.Nombre = SelectedProduct.Nombre;                                
-                VModel.Foto = SelectedProduct.Foto;
-                VModel.Precio = SelectedProduct.Precio;
-                VModel.Id = SelectedProduct.Id;
-
-                page.BindingContext = VModel;
-
+                var Model = new ProductosViewModels();
+                Model.SelectedProduct = selectedProduct;
+                Model.Nombre = selectedProduct.Nombre;
+                Model.Foto = selectedProduct.Foto;
+                Model.Precio = selectedProduct.Precio;
+                Model.Key = selectedProduct.Key;
+                page.BindingContext = Model;
 
                 await Navigation.PushAsync(page);
             }
@@ -110,48 +98,47 @@ namespace MauiAppMVVM.ModelView
 
         async Task NuevoProducto(Type pageType)
         {
-
             var page = (Page)Activator.CreateInstance(pageType);
 
-            var VModel = new ProductosViewModels();
-            VModel.SelectedProduct = null;
-            page.BindingContext = VModel;
+            var viewModel = new ProductosViewModels();
+            viewModel.SelectedProduct = null;
+            page.BindingContext = viewModel;
             await Navigation.PushAsync(page);
-
-
         }
 
-        async Task DeleteProduct(int id)
+        async Task DeleteProducto(string key)
         {
             if (SelectedProduct != null)
             {
-                bool Confirmo = await Application.Current.MainPage.DisplayAlert("Confirmacion", "Esta Seguro Que Desea Borrar Este Registro?", "Si", "No");
-
-                if (Confirmo)
+                var tappedItem = Products.FirstOrDefault(item => item.Key == key);
+                bool userConfirmed = await Application.Current.MainPage.DisplayAlert("Confirmación", "¿Está seguro de que desea eliminar este producto?", "Si", "No");
+                if (userConfirmed)
                 {
                     try
                     {
-                        if (productosController != null)
-                        {
-                            int exito = await productosController.deleteProductos(id);
 
-                            if (exito != 0)
+                        if (firebaseControl != null)
+                        {
+                            bool success = await firebaseControl.deleteProducto(key);
+
+                            if (success)
                             {
-                                Products.Remove(SelectedProduct);
-                                await Application.Current.MainPage.DisplayAlert("Atencion", "Producto Eliminado", "OK");
+                                Products.Remove(tappedItem);
+                                SelectedProduct = null;
+
+                                await Application.Current.MainPage.DisplayAlert("Atención", "Producto Eliminado", "OK");
                             }
                         }
+
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        await Application.Current.MainPage.DisplayAlert("Atencion", $"No Se Pudo Borrar El Registro: \n{ex.Message}", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Atención", "No se pudo eliminar el producto", "OK");
                     }
                 }
+
             }
-            else
-            {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Seleccione un producto válido para eliminar.", "OK");
-            }
+
         }
 
     }

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "674158874739",
+    "firebase_url": "https://mvvm-741a5-default-rtdb.firebaseio.com",
+    "project_id": "mvvm-741a5",
+    "storage_bucket": "mvvm-741a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:674158874739:android:63b6ce83f9b61badb41a06",
+        "android_client_info": {
+          "package_name": "com.mvvm.grupo5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC0TIKDitb5Isb9fCsZrexkN73hfpjC14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,24 +13,24 @@ namespace MauiAppMVVM.ModelView
 {
     public class ProductosViewModels : BaseView
     {
-       
+        private FirebaseControl Firebasecontrol = new FirebaseControl();
         private ProductosController productosController = new ProductosController();
-        private int productId;        
-        private string _nombre;                
+        private string productKey;
+        private string _nombre;
         private double _precio;
         private string _foto;
-        private int _id;
+        private string _key;
         private bool _visibilityCreate;
         private bool _visibilityUpdate;
-        private Models.Productos _selectedProduct;
+        private Models.FireProd _selectedProduct;
 
         FirebaseClient client = new FirebaseClient("https://mvvm-741a5-default-rtdb.firebaseio.com/");
         public List<Productos> Productas { get; set; }
 
-        public int Id
+        public string Key
         {
-            get { return _id; }
-            set { _id = value; OnPropertyChanged(); }
+            get { return _key; }
+            set { _key = value; OnPropertyChanged(); }
         }
 
         public string Nombre
@@ -63,7 +63,7 @@ namespace MauiAppMVVM.ModelView
             set { _visibilityUpdate = value; OnPropertyChanged(); }
         }
 
-        public Models.Productos SelectedProduct
+        public Models.FireProd SelectedProduct
         {
             get { return _selectedProduct; }
             set 
@@ -80,10 +80,9 @@ namespace MauiAppMVVM.ModelView
         public ProductosViewModels()
         {
             CleanCommand = new Command(Cleaner);
-            FotoCommand = new Command(() => TomarFoto());
-            if (productId == 0) { }
+            FotoCommand = new Command(() => TomarFoto());            
             CreateCommand = new Command(async () => await CreateData());
-            UpdateCommand = new Command(async () => await UpdateProducto(productId));
+            UpdateCommand = new Command(async () => await UpdateProducto(productKey));
         }
 
         public ICommand CleanCommand { get; private set; }
@@ -105,7 +104,7 @@ namespace MauiAppMVVM.ModelView
         {
             if(SelectedProduct != null)
             {
-                productId = SelectedProduct.Id;
+                productKey = SelectedProduct.Key;
                 VisibilityCreate = false;
                 VisibilityUpdate = true;
             }
@@ -116,113 +115,98 @@ namespace MauiAppMVVM.ModelView
             }
         }
 
-                                                                                                              //CRUD 
+                                                                                                 //CRUD 
 
 
         async Task CreateData()
         {
-            if(Nombre == null)
+            if (Nombre == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Porfavor Ingrese una Descripcion para el producto", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor ingrese una descripcion para el producto", "OK");
                 return;
             }
             else if (Precio == 0)
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Porfavor Ingrese un Precio para el producto", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor ingrese un precio para el producto", "OK");
                 return;
             }
 
             try
             {
-
-                var Product = new Models.Productos
+                var product = new Models.FireProd
                 {
-
                     Nombre = Nombre,
                     Precio = Precio,
-                    Foto = Foto,
+                    Foto = Foto
                 };
 
-                if(productosController != null)
+                if (Firebasecontrol != null)
                 {
-                    bool añadido = await productosController.storeProductos(Product);
-                    
-                    await client.Child("Productos").PostAsync(new Productos
+                    bool addedSuccessfully = await Firebasecontrol.CrearProducto(product);
+
+                    if (addedSuccessfully)
                     {
-                        Id = Product.Id,
-                        Nombre = Product.Nombre,
-                        Precio = Product.Precio,
-                        Foto = Product.Foto,
-
-
-                    });
-
-                    if (añadido)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Atencion", "Producto Creado", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Atención", "Producto Creado", "OK");
                         var navigation = Application.Current.MainPage.Navigation;
                         await navigation.PushAsync(new Views.PageListProductos());
                     }
                 }
-       
-            }
 
-            catch (Exception ex)
+            }
+            catch
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "No se Puedo Crear El Producto", "OK");
-
+                await Application.Current.MainPage.DisplayAlert("Atención", "No se pudo crear el producto", "OK");
             }
-
         }
 
-        async Task UpdateProducto(int id)
+        async Task UpdateProducto(string key)
         {
-            if(Nombre == null)
+            if (Nombre == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Ingrese Un Nombre Para El Producto", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor ingrese una descripcion para el producto", "OK");
                 return;
             }
-            else if(Precio == 0)
+            else if (Precio == 0)
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Ingrese Un Precio Para El Producto", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor ingrese un precio para el producto", "OK");
                 return;
             }
 
             try
             {
-                var Product = new Models.Productos
+                var product = new Models.FireProd
                 {
-                    Id = id,
+                    Key = key,
                     Nombre = Nombre,
                     Precio = Precio,
-                    Foto = Foto,
+                    Foto = Foto
                 };
 
-                if (productosController != null)
+                if (Firebasecontrol != null)
                 {
-                    bool añadido = await productosController.storeProductos(Product);
+                    bool addedSuccessfully = await Firebasecontrol.CrearProducto(product);
 
-                    if (añadido)
+                    if (addedSuccessfully)
                     {
-                        await Application.Current.MainPage.DisplayAlert("Atencion", "Producto Modificado", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Atención", "Producto Actualizado", "OK");
                         var navigation = Application.Current.MainPage.Navigation;
                         await navigation.PushAsync(new Views.PageListProductos());
                     }
                 }
 
             }
-            catch(Exception ex)
+            catch
             {
-                await Application.Current.MainPage.DisplayAlert("Atencion", "Ingrese Un Precio Para El Producto", "OK");
+                await Application.Current.MainPage.DisplayAlert("Atención", "No se pudo actualizar el producto", "OK");
             }
         }
 
-
+        //Tomar Foto
         async void TomarFoto()
         {
             FileResult photo = await MediaPicker.CapturePhotoAsync();
 
-            if(photo != null)
+            if (photo != null)
             {
                 string photoPath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
                 using (Stream sourcephoto = await photo.OpenReadAsync())
@@ -235,10 +219,5 @@ namespace MauiAppMVVM.ModelView
             }
         }
 
-        public void CargarProd()
-        {
-            var prod = client.Child("Productos").OnceAsync<Productos>();
-            Productas = prod.Result.Select(X => X.Object).ToList();
-        }
     }
 }
